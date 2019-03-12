@@ -23,7 +23,7 @@ It is designed:
 
 2. To be as unobtrusive as possible
 
-
+```golang
     package main
 
     import (
@@ -60,7 +60,8 @@ It is designed:
 
     func main() {
        panic(fasthttp.ListenAndServe(":8080", API{"Hello"}.Handle))
-    }
+       }
+```
 
 The above will return `Hello james` for GET /hello/james, and a 404 for anything else.
 
