@@ -20,6 +20,7 @@ func New() *Routes {
 	return &Routes{
 		Routes: make(map[string]fasthttp.RequestHandler),
 		Catcher: func(ctx *fasthttp.RequestCtx) {
+			ctx.SetStatusCode(404)
 			fmt.Fprintf(ctx, "404 - no such route %s", string(ctx.Path()))
 		},
 	}

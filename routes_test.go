@@ -17,15 +17,16 @@ func TestRoutes_Route(t *testing.T) {
 	}
 
 	for _, test := range []struct {
-		name   string
-		url    string
-		expect string
+		name         string
+		url          string
+		expect       string
+		expectStatus int
 	}{
-		{"Simple request, slash", "/", "root"},
-		{"Simple request, a path", "/onething/", "onething"},
-		{"Many path elems", "a/couple/of/things/", "a couple of things"},
-		{"A templated value", "/a/thing/to/be/used/", "thing"},
-		{"Undefined, simple path", "/nonesuch", "404 - no such route /nonesuch"},
+		{"Simple request, slash", "/", "root", 200},
+		{"Simple request, a path", "/onething/", "onething", 200},
+		{"Many path elems", "a/couple/of/things/", "a couple of things", 200},
+		{"A templated value", "/a/thing/to/be/used/", "thing", 200},
+		{"Undefined, simple path", "/nonesuch", "404 - no such route /nonesuch", 404},
 	} {
 		t.Run(test.name, func(t *testing.T) {
 			req := fasthttp.AcquireRequest()
@@ -41,10 +42,19 @@ func TestRoutes_Route(t *testing.T) {
 
 			r.Route(c)
 
-			received := string(c.Response.Body())
-			if test.expect != received {
-				t.Errorf("expected %q, received %q", test.expect, received)
-			}
+			t.Run("response body", func(t *testing.T) {
+				received := string(c.Response.Body())
+				if test.expect != received {
+					t.Errorf("expected %q, received %q", test.expect, received)
+				}
+			})
+
+			t.Run("response status", func(t *testing.T) {
+				status := c.Response.StatusCode()
+				if test.expectStatus != status {
+					t.Errorf("expected %d, received %d", test.expectStatus, status)
+				}
+			})
 		})
 	}
 }
